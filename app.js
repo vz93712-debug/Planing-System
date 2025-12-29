@@ -1,6 +1,5 @@
 // === НАСТРОЙКИ ===
-// ВСТАВЬТЕ СЮДА НОВУЮ ССЫЛКУ ИЗ DEPLOYMENT (v3.0)
-const API_URL = "https://script.google.com/macros/s/ВАША_НОВАЯ_ССЫЛКА_ЗДЕСЬ/exec"; 
+const API_URL = "https://script.google.com/macros/s/AKfycbw6cVQq0ISDPs1zDTme0J7jkf5Rt7_tRhrCaWKR6nDk9n1-96Amg9x-hF5-pn0251OPeg/exec"; 
 
 // === 1. ЗАГРУЗКА ДАННЫХ ===
 async function fetchTasks() {
