@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Synapse Planner</title>
+    <style>
+        /* Стили для имитации "карточек" как на скриншоте */
+        body { font-family: 'Inter', sans-serif; background: #f4f4f9; padding: 20px; }
+        .task-card {
+            background: white;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 12px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .priority-High { border-left: 4px solid #ff4d4d; }
+        .priority-Medium { border-left: 4px solid #ffcc00; }
+    </style>
+</head>
+<body>
+
+    <h1>Мои Задачи</h1>
+    <div id="app">Загрузка...</div>
+
+    <script>
+        const API_URL = 'ВСТАВЬТЕ_СЮДА_ВАШ_URL_ИЗ_ШАГА_1';
+
+        async function loadTasks() {
+            try {
+                const response = await fetch(API_URL);
+                const data = await response.json();
+                render(data);
+            } catch (error) {
+                console.error('Ошибка:', error);
+            }
+        }
+
+        function render(tasks) {
+            const container = document.getElementById('app');
+            container.innerHTML = ''; // Очистить
+            
+            tasks.forEach(task => {
+                // Простая фильтрация (только невыполненные)
+                if (task.Status !== true && task.Status !== "TRUE") { 
+                    const div = document.createElement('div');
+                    div.className = `task-card priority-${task.Priority}`;
+                    div.innerHTML = `
+                        <div>
+                            <strong>${task.Task_Name}</strong><br>
+                            <small>${task.Time_Block}</small>
+                        </div>
+                        <input type="checkbox">
+                    `;
+                    container.appendChild(div);
+                }
+            });
+        }
+
+        loadTasks();
+    </script>
+</body>
+</html>
