@@ -1,0 +1,67 @@
+:root {
+    --bg: #F2F2F7;
+    --card: #FFFFFF;
+    --text: #1C1C1E;
+    --subtext: #8E8E93;
+    --blue: #007AFF;
+    --green: #34C759;
+    --red: #FF3B30;
+    --orange: #FF9500;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+    background-color: var(--bg);
+    color: var(--text);
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+}
+
+h1 { font-weight: 800; margin-bottom: 20px; letter-spacing: -0.5px; }
+.section-title { width: 100%; max-width: 450px; margin: 20px 0 10px; font-size: 14px; text-transform: uppercase; color: var(--subtext); letter-spacing: 1px; }
+
+/* === ДАШБОРД === */
+.dashboard-container { width: 100%; max-width: 450px; margin-bottom: 24px; }
+.progress-card { background: var(--card); padding: 20px; border-radius: 24px; box-shadow: 0 8px 20px rgba(0,0,0,0.06); display: flex; align-items: center; gap: 20px; }
+.ring-container { position: relative; width: 100px; height: 100px; }
+.progress-ring__circle { transition: stroke-dashoffset 0.8s ease-in-out; transform: rotate(-90deg); transform-origin: 50% 50%; stroke-dasharray: 326.72; stroke-dashoffset: 326.72; stroke-linecap: round; }
+.ring-text { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 800; color: var(--blue); }
+.stats-text h3 { margin: 0 0 5px 0; font-size: 18px; }
+.stats-text p { margin: 0; color: var(--subtext); font-size: 14px; }
+
+/* === ВВОД === */
+.input-group { background: var(--card); padding: 6px; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); display: flex; gap: 8px; width: 100%; max-width: 450px; margin-bottom: 10px; }
+.input-group input { flex-grow: 1; border: none; outline: none; padding: 10px; font-size: 16px; min-width: 0; }
+.input-group select { border: none; background: #F2F2F7; border-radius: 10px; padding: 0 8px; font-size: 13px; color: var(--text); cursor: pointer; }
+.add-btn { background: var(--blue); color: white; border: none; width: 40px; height: 40px; border-radius: 12px; font-size: 24px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
+.add-btn:active { transform: scale(0.92); }
+.add-btn:disabled { background: var(--subtext); }
+
+/* === СПИСКИ === */
+.list-container { width: 100%; max-width: 450px; display: flex; flex-direction: column; gap: 10px; }
+.loading { text-align: center; color: var(--subtext); margin-top: 20px; }
+
+.task-card { background: var(--card); padding: 16px; border-radius: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.03); display: flex; align-items: center; justify-content: space-between; transition: all 0.3s ease; border-left: 4px solid transparent; }
+.priority-High { border-left-color: var(--red); }
+.priority-Medium { border-left-color: var(--orange); }
+.priority-Low { border-left-color: var(--green); }
+
+.task-content { display: flex; flex-direction: column; gap: 4px; }
+.task-title { font-weight: 600; font-size: 16px; }
+.task-meta { font-size: 12px; color: var(--subtext); display: flex; gap: 8px; align-items: center; }
+
+/* Стиль для Привычек */
+.habit-streak { background: #FFF0EB; color: #FF3B30; padding: 2px 8px; border-radius: 100px; font-weight: 700; font-size: 12px; display: flex; align-items: center; gap: 4px; }
+
+/* Чекбокс */
+.checkbox-wrapper { position: relative; width: 28px; height: 28px; margin-left: 12px; flex-shrink: 0; }
+.checkbox-wrapper input { opacity: 0; width: 100%; height: 100%; position: absolute; z-index: 2; cursor: pointer; }
+.custom-check { width: 100%; height: 100%; border: 2px solid #D1D1D6; border-radius: 50%; position: absolute; transition: 0.2s; box-sizing: border-box; }
+input:checked + .custom-check { background-color: var(--blue); border-color: var(--blue); background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white' width='18px' height='18px'%3E%3Cpath d='M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z'/%3E%3C/svg%3E"); background-position: center; background-repeat: no-repeat; }
+
+.task-card.completed { opacity: 0.6; }
+.task-card.completed .task-title { text-decoration: line-through; }
