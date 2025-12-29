@@ -1,359 +1,57 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ru">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Synapse LifeOS</title>
-        <style>
-            :root {
-                --bg: #f2f2f7;
-                --card: #ffffff;
-                --text: #1c1c1e;
-                --subtext: #8e8e93;
-                --blue: #007aff;
-                --green: #34c759;
-                --red: #ff3b30;
-                --orange: #ff9500;
-            }
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Synapse LifeOS</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
 
-            body {
-                font-family:
-                    -apple-system, BlinkMacSystemFont, "SF Pro Text",
-                    "Segoe UI", Roboto, Helvetica, sans-serif;
-                background-color: var(--bg);
-                color: var(--text);
-                margin: 0;
-                padding: 20px;
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                min-height: 100vh;
-            }
+    <h1>Мой План</h1>
 
-            h1 {
-                font-weight: 800;
-                margin-bottom: 24px;
-                letter-spacing: -0.5px;
-            }
+    <div class="dashboard-container">
+        <div class="progress-card">
+            <div class="ring-container">
+                <svg class="progress-ring" width="120" height="120">
+                    <circle class="progress-ring__circle-bg" stroke="#E5E5EA" stroke-width="8" fill="transparent" r="52" cx="60" cy="60"/>
+                    <circle class="progress-ring__circle" stroke="#007AFF" stroke-width="8" fill="transparent" r="52" cx="60" cy="60"/>
+                </svg>
+                <div class="ring-text">
+                    <span id="percent-text">0%</span>
+                </div>
+            </div>
+            <div class="stats-text">
+                <h3>Эффективность</h3>
+                <p>Сделано: <span id="done-count">0</span> / <span id="total-count">0</span></p>
+                <p id="motivation-msg">Загрузка...</p>
+            </div>
+        </div>
+    </div>
 
-            /* === БЛОК ВВОДА === */
-            .input-group {
-                background: var(--card);
-                padding: 8px;
-                border-radius: 16px;
-                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-                display: flex;
-                gap: 8px;
-                width: 100%;
-                max-width: 450px;
-                margin-bottom: 24px;
-            }
+    <div class="input-group">
+        <select id="new-item-type">
+            <option value="task">✅ Задача</option>
+            <option value="habit">🔄 Привычка</option>
+        </select>
+        <input type="text" id="new-task-title" placeholder="Название..." autocomplete="off">
+        <select id="new-task-priority">
+            <option value="High">🔥 Важно</option>
+            <option value="Medium" selected>⭐️ Обычно</option>
+            <option value="Low">☕️ Изи</option>
+        </select>
+        <button class="add-btn" onclick="addItem()">+</button>
+    </div>
 
-            .input-group input {
-                flex-grow: 1;
-                border: none;
-                outline: none;
-                padding: 10px;
-                font-size: 16px;
-                background: transparent;
-            }
+    <h3 class="section-title">Привычки</h3>
+    <div id="habits-list" class="list-container">
+        <div class="loading">Загрузка...</div>
+    </div>
 
-            .input-group select {
-                border: none;
-                background: #f2f2f7;
-                border-radius: 8px;
-                padding: 0 8px;
-                font-size: 14px;
-                color: var(--text);
-                cursor: pointer;
-            }
-
-            .add-btn {
-                background: var(--blue);
-                color: white;
-                border: none;
-                width: 40px;
-                height: 40px;
-                border-radius: 10px;
-                font-size: 24px;
-                line-height: 1;
-                cursor: pointer;
-                transition: 0.2s;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-            }
-            .add-btn:active {
-                transform: scale(0.92);
-            }
-            .add-btn:disabled {
-                background: var(--subtext);
-                cursor: wait;
-            }
-
-            /* === СПИСОК ЗАДАЧ === */
-            #task-list {
-                width: 100%;
-                max-width: 450px;
-                display: flex;
-                flex-direction: column;
-                gap: 12px;
-                padding-bottom: 40px;
-            }
-
-            .task-card {
-                background: var(--card);
-                padding: 16px;
-                border-radius: 16px;
-                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-                transition: all 0.3s ease;
-                border-left: 4px solid transparent;
-            }
-
-            /* Индикаторы приоритета */
-            .priority-High {
-                border-left-color: var(--red);
-            }
-            .priority-Medium {
-                border-left-color: var(--orange);
-            }
-            .priority-Low {
-                border-left-color: var(--green);
-            }
-
-            .task-content {
-                display: flex;
-                flex-direction: column;
-                gap: 4px;
-            }
-            .task-title {
-                font-weight: 600;
-                font-size: 16px;
-            }
-            .task-meta {
-                font-size: 12px;
-                color: var(--subtext);
-                display: flex;
-                gap: 6px;
-                align-items: center;
-            }
-
-            .badge {
-                padding: 2px 6px;
-                border-radius: 4px;
-                background: #eee;
-                font-weight: 500;
-            }
-
-            /* === ЧЕКБОКС === */
-            .checkbox-wrapper {
-                position: relative;
-                width: 28px;
-                height: 28px;
-                margin-left: 12px;
-            }
-            .checkbox-wrapper input {
-                opacity: 0;
-                width: 100%;
-                height: 100%;
-                position: absolute;
-                z-index: 2;
-                cursor: pointer;
-            }
-            .custom-check {
-                width: 100%;
-                height: 100%;
-                border: 2px solid #d1d1d6;
-                border-radius: 50%;
-                position: absolute;
-                transition: 0.2s;
-                box-sizing: border-box;
-            }
-
-            /* Состояние: Выполнено */
-            input:checked + .custom-check {
-                background-color: var(--blue);
-                border-color: var(--blue);
-                background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white' width='18px' height='18px'%3E%3Cpath d='M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z'/%3E%3C/svg%3E");
-                background-position: center;
-                background-repeat: no-repeat;
-            }
-
-            .task-card.completed {
-                opacity: 0.6;
-            }
-            .task-card.completed .task-title {
-                text-decoration: line-through;
-            }
-
-            .loading {
-                text-align: center;
-                color: var(--subtext);
-                margin-top: 20px;
-            }
-        </style>
-    </head>
-    <body>
-        <h1>Мой План</h1>
-
-        <div class="input-group">
-            <input
-                type="text"
-                id="new-task-title"
-                placeholder="Новая задача..."
-                autocomplete="off"
-            />
-            <select id="new-task-priority">
-                <option value="High">🔥 Важно</option>
-                <option value="Medium" selected>⭐️ Обычно</option>
-                <option value="Low">☕️ Изи</option>
-            </select>
-            <button class="add-btn" onclick="addTask()">+</button>
+    <h3 class="section-title">Задачи</h3>
+    <div id="tasks-list" class="list-container">
         </div>
 
-        <div id="task-list">
-            <div class="loading">Загрузка базы данных...</div>
-        </div>
-
-        <script>
-            // ==========================================
-
-            const API_URL =
-                "https://script.google.com/macros/s/AKfycbwxaRoGPm0eiCUyFQ0Exn95QjdXt1CNhPzdm3OzFfYeL19i0D-ePlfM75bDyipdhKLUZw/exec";
-            // ==========================================
-
-            // 1. ЗАГРУЗКА И СОРТИРОВКА
-            async function fetchTasks() {
-                const listContainer = document.getElementById("task-list");
-                try {
-                    const response = await fetch(API_URL + "?action=read");
-                    const json = await response.json();
-
-                    if (json.status === "success") {
-                        // Сортировка: Сначала невыполненные, внутри них - по приоритету
-                        const sortedData = json.data.sort((a, b) => {
-                            // 1. Статус (false выше true)
-                            if (a.status !== b.status) return a.status ? 1 : -1;
-                            // 2. Приоритет (High > Medium > Low)
-                            const pMap = { High: 3, Medium: 2, Low: 1 };
-                            return (
-                                (pMap[b.priority] || 0) -
-                                (pMap[a.priority] || 0)
-                            );
-                        });
-                        renderTasks(sortedData);
-                    } else {
-                        listContainer.innerHTML = `<div class="loading">Ошибка: ${json.message}</div>`;
-                    }
-                } catch (e) {
-                    console.error(e);
-                    listContainer.innerHTML = `<div class="loading">Нет связи с сервером</div>`;
-                }
-            }
-
-            // 2. ОТРИСОВКА
-            function renderTasks(tasks) {
-                const listContainer = document.getElementById("task-list");
-                listContainer.innerHTML = "";
-
-                if (tasks.length === 0) {
-                    listContainer.innerHTML = `<div class="loading">Задач нет. Отдыхаем?</div>`;
-                    return;
-                }
-
-                tasks.forEach((task) => {
-                    const isDone =
-                        task.status === true ||
-                        String(task.status).toLowerCase() === "true";
-
-                    const card = document.createElement("div");
-                    card.className = `task-card priority-${task.priority} ${isDone ? "completed" : ""}`;
-
-                    card.innerHTML = `
-                    <div class="task-content">
-                        <span class="task-title">${task.title}</span>
-                        <div class="task-meta">
-                            <span class="badge">${translatePriority(task.priority)}</span>
-                            <span>${task.time}</span>
-                        </div>
-                    </div>
-                    <div class="checkbox-wrapper">
-                        <input type="checkbox" ${isDone ? "checked" : ""}
-                               onchange="toggleTask(${task.id}, this)">
-                        <div class="custom-check"></div>
-                    </div>
-                `;
-                    listContainer.appendChild(card);
-                });
-            }
-
-            // 3. ДОБАВЛЕНИЕ (CREATE)
-            async function addTask() {
-                const titleInput = document.getElementById("new-task-title");
-                const priorityInput =
-                    document.getElementById("new-task-priority");
-                const btn = document.querySelector(".add-btn");
-
-                const title = titleInput.value.trim();
-                if (!title) return;
-
-                // Блокируем кнопку
-                btn.disabled = true;
-                btn.innerHTML = "⏳";
-
-                try {
-                    // Отправляем POST запрос
-                    await fetch(API_URL + "?action=create", {
-                        method: "POST",
-                        headers: { "Content-Type": "text/plain;charset=utf-8" },
-                        body: JSON.stringify({
-                            title: title,
-                            priority: priorityInput.value,
-                            time: "Inbox", // Можно доработать выбор времени позже
-                        }),
-                    });
-
-                    // Очистка и обновление
-                    titleInput.value = "";
-                    await fetchTasks();
-                } catch (e) {
-                    alert("Не удалось создать задачу");
-                } finally {
-                    btn.disabled = false;
-                    btn.innerHTML = "+";
-                }
-            }
-
-            // 4. ОБНОВЛЕНИЕ СТАТУСА (UPDATE)
-            function toggleTask(id, checkbox) {
-                const isChecked = checkbox.checked;
-                const card = checkbox.closest(".task-card");
-
-                // Optimistic UI update (меняем вид сразу)
-                if (isChecked) card.classList.add("completed");
-                else card.classList.remove("completed");
-
-                fetch(API_URL + "?action=toggle", {
-                    method: "POST",
-                    headers: { "Content-Type": "text/plain;charset=utf-8" },
-                    body: JSON.stringify({ id: id, status: isChecked }),
-                }).catch((err) => {
-                    // Если ошибка - возвращаем галочку назад
-                    checkbox.checked = !isChecked;
-                    alert("Ошибка сохранения");
-                });
-            }
-
-            function translatePriority(p) {
-                const map = { High: "🔥", Medium: "⭐️", Low: "☕️" };
-                return map[p] || p;
-            }
-
-            // Запуск
-            fetchTasks();
-        </script>
-    </body>
+    <script src="app.js"></script>
+</body>
 </html>
